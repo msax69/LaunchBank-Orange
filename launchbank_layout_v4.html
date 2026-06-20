@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LaunchBank — Orange AI Prototype</title>
+<style>
+:root{
+  --bg:#090b0f;
+  --surface:#11141a;
+  --surface-2:#151922;
+  --surface-3:#1a1f29;
+  --border:rgba(255,255,255,0.08);
+  --border-2:rgba(255,255,255,0.12);
+  --text:#f3f6fb;
+  --muted:#97a0af;
+  --muted-2:#6f7887;
+  --accent:#ff6b00;
+  --accent-soft:rgba(255,107,0,0.14);
+  --blue:#6ea8fe;
+  --green:#57d48b;
+  --yellow:#f3b84b;
+  --red:#ff6f7d;
+  --shadow:0 20px 60px rgba(0,0,0,.35);
+  --radius:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255,107,0,.08), transparent 28%),
+    radial-gradient(circle at top right, rgba(110,168,254,.05), transparent 22%),
+    linear-gradient(180deg,#08090d 0%, #0c1016 100%);
+  color:var(--text);
+  min-height:100vh;
+  letter-spacing:-0.01em;
+}
+body:before{
+  content:"";
+  position:fixed;inset:0;
+  pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+  background-size:36px 36px;
+  mask-image:radial-gradient(circle at center, black 45%, transparent 100%);
+  opacity:.35;
+}
+.header{
+  position:sticky;top:0;z-index:50;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 34px;
+  backdrop-filter:blur(16px);
+  background:rgba(9,11,15,.72);
+  border-bottom:1px solid var(--border);
+}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-mark{
+  width:12px;height:12px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 0 8px rgba(255,107,0,.08),0 0 30px rgba(255,107,0,.25);
+}
+.logo{font-size:22px;font-weight:800;letter-spacing:-.04em}
+.logo span{color:var(--accent)}
+.sublogo{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}
+.header-meta{display:flex;align-items:center;gap:10px}
+.badge{
+  padding:7px 11px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);background:var(--accent-soft);border:1px solid rgba(255,107,0,.24)
+}
+.meta-note{font-size:11px;color:var(--muted)}
+.wrap{max-width:1420px;margin:0 auto;padding:24px}
+.hero{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:24px;
+  margin:4px 0 18px 0;padding:10px 6px 2px;
+}
+.hero h1{font-size:34px;line-height:1.02;letter-spacing:-.05em;font-weight:800;max-width:760px}
+.hero p{margin-top:10px;color:var(--muted);font-size:14px;line-height:1.7;max-width:700px}
+.hero-right{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.micro{
+  min-width:126px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid var(--border);box-shadow:var(--shadow)
+}
+.micro .n{font-size:22px;font-weight:800;color:var(--text)}
+.micro .l{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-top:4px}
+.grid{display:grid;grid-template-columns:360px 1fr;gap:18px}
+.panel{
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow:var(--shadow);
+}
+.title{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.16em;
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)
+}
+.title .rule{width:34px;height:1px;background:linear-gradient(90deg,var(--accent),transparent)}
+.sg{margin-bottom:15px}.sl{display:flex;justify-content:space-between;gap:14px;font-size:13px;margin-bottom:8px}.sl span:first-child{color:#dfe5ef}.sl span:last-child{color:var(--text);font-weight:700}
+input[type=range]{width:100%;-webkit-appearance:none;height:5px;background:linear-gradient(90deg, rgba(255,255,255,.1), rgba(255,255,255,.04));border-radius:999px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 0 0 5px rgba(255,107,0,.18);border:2px solid var(--accent);cursor:pointer}
+select{width:100%;background:var(--surface-2);color:var(--text);border:1px solid var(--border-2);border-radius:12px;padding:11px 12px;font-size:13px;outline:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.03);border:1px solid var(--border);font-size:11px;color:var(--muted);cursor:pointer;transition:.2s}.chip.active{background:rgba(255,107,0,.12);border-color:rgba(255,107,0,.32);color:#fff}
+.warn{display:none;margin-top:14px;padding:14px 15px;border-radius:16px;background:rgba(255,111,125,.08);border:1px solid rgba(255,111,125,.28)}.warn.show{display:block}.warn h4{font-size:12px;color:var(--red);margin-bottom:5px;letter-spacing:.02em}.warn p{font-size:11px;color:var(--muted);line-height:1.6}
+.right{display:flex;flex-direction:column;gap:18px}
+.top{display:grid;grid-template-columns:220px 1fr;gap:18px}
+.score-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%}
+.ring{position:relative;width:164px;height:164px}.ring svg{transform:rotate(-90deg)}
+.score{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}.score .num{font-size:42px;font-weight:900;letter-spacing:-.04em}.score .sub{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em}
+.stage{margin-top:14px;padding:8px 16px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.04em}.desc{margin-top:10px;text-align:center;color:var(--muted);font-size:12px;line-height:1.65;max-width:240px}
+.rec{padding:18px;border-radius:18px;border:1px solid rgba(255,107,0,.24);background:linear-gradient(135deg, rgba(255,107,0,.09), rgba(255,255,255,.02))}
+.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);margin-bottom:8px}
+.product{font-size:24px;line-height:1.08;font-weight:800;letter-spacing:-.04em;max-width:560px}.timing{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.7;max-width:620px}
+.meta-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.tag{padding:7px 10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);font-size:11px;color:var(--muted)}.tag span{color:#fff;font-weight:700}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.box{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:16px;padding:14px}.box .l{font-size:10px;text-transform:uppercase;color:var(--muted);letter-spacing:.14em;margin-bottom:6px}.box .v{font-size:15px;font-weight:700;line-height:1.45}
+.agents{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.agent{padding:16px 12px;border-radius:16px;background:rgba(255,255,255,.025);border:1px solid var(--border);transition:.25s}.agent.active{background:rgba(255,107,0,.08);border-color:rgba(255,107,0,.26)}.agent .index{font-size:10px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase}.agent .name{margin-top:10px;font-size:14px;font-weight:700;line-height:1.3}.agent .status{margin-top:10px;font-size:11px;font-weight:700}.on{color:var(--green)}.off{color:var(--muted-2)}.warnstate{color:var(--yellow)}
+.sections{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.full{grid-column:1/-1}
+.credit-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)}.credit-row:last-child{border-bottom:none}.ci{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted)}.cn{font-size:13px;font-weight:700}.cd{font-size:11px;color:var(--muted);margin-top:3px}.cb{margin-left:auto;padding:5px 10px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.g{background:rgba(87,212,139,.1);color:var(--green)}.y{background:rgba(243,184,75,.12);color:var(--yellow)}.r{background:rgba(255,111,125,.12);color:var(--red)}
+.toggle{display:flex;gap:10px;margin-bottom:12px}.tb{flex:1;padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.03);font-size:12px;color:var(--muted);cursor:pointer;text-align:center;font-weight:700;line-height:1.45}.tb.sel{background:rgba(255,107,0,.1);color:#fff;border-color:rgba(255,107,0,.26)}
+.note,.modeldesc,.modelout{font-size:12px;line-height:1.7;color:var(--muted)}.modelout{margin-top:12px;padding:13px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid var(--border);color:#e7edf5}
+.bars{display:grid;grid-template-columns:1fr 1fr;gap:14px}.barlab{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}.bar{height:10px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}.fill{height:100%;border-radius:999px;transition:width .45s ease}
+.journey{display:flex;align-items:center}.step{flex:1;text-align:center}.dot{width:32px;height:32px;border-radius:50%;margin:0 auto 8px;border:1px solid var(--border-2);background:rgba(255,255,255,.03)}.line{flex:1;height:1px;background:var(--border-2);margin-top:-20px}.line.on{background:linear-gradient(90deg,var(--accent),rgba(255,107,0,.32))}.dot{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted)}.jl{font-size:11px;color:#dbe2ec;font-weight:700}.jm{font-size:10px;color:var(--muted);margin-top:2px}
+.personal-grid{display:grid;grid-template-columns:370px 1fr;gap:16px}.profile-card{padding:18px;border-radius:18px;background:rgba(255,255,255,.025);border:1px solid var(--border)}.profile-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.profile-head h3{font-size:16px;letter-spacing:-.03em}.profile-head p{font-size:12px;color:var(--muted);line-height:1.6;max-width:280px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.item{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:14px;padding:12px}.item .k{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:5px}.item .v{font-size:12px;font-weight:700;line-height:1.6}
+.list{display:flex;flex-direction:column;gap:10px;margin-top:14px}.itemrec{padding:14px;border-radius:16px;background:rgba(255,255,255,.025);border:1px solid var(--border)}.itemrec .topline{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.name{font-size:14px;font-weight:800;letter-spacing:-.02em}.sub{font-size:11px;color:var(--muted);margin-top:4px}.pill{padding:5px 8px;border-radius:999px;background:rgba(110,168,254,.12);color:var(--blue);font-size:10px;font-weight:800;white-space:nowrap;letter-spacing:.08em;text-transform:uppercase}.why{font-size:11px;color:#dde5ef;line-height:1.65;margin-top:9px}.insight{margin-top:12px;padding:14px;border-radius:16px;background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.22);font-size:12px;line-height:1.7;color:#e9edf2}
+.examples{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.example{padding:16px;border-radius:16px;background:rgba(255,255,255,.02);border:1px solid var(--border)}.example .eh{font-size:12px;font-weight:800}.example .el{font-size:11px;color:var(--muted);line-height:1.65;margin-top:8px}.callout{margin-top:12px;padding:15px;border-radius:16px;background:rgba(255,255,255,.02);border:1px solid var(--border)}
+.fly{display:flex;align-items:center;gap:6px;overflow:auto;padding-bottom:4px}.node{min-width:106px;padding:14px 12px;border-radius:16px;background:rgba(255,255,255,.025);border:1px solid var(--border);text-align:center}.node .i{width:28px;height:28px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--accent);background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.18)}.node .l{font-size:11px;color:#dde4ed;line-height:1.45;margin-top:8px}.arrow{color:var(--muted-2);font-size:14px}.mile{font-size:11px;color:var(--muted);line-height:1.7;margin-top:13px;text-align:center}.mile span{color:#fff;font-weight:800}
+.stagegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.scard{padding:18px;border-radius:18px;background:rgba(255,255,255,.025);border:1px solid var(--border)}.scard .topline{display:flex;justify-content:space-between;align-items:center;gap:8px}.smark{width:28px;height:28px;border-radius:50%;border:1px solid var(--border-2);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--accent)}.scard .n{font-size:15px;font-weight:800;letter-spacing:-.03em}.scard .r{font-size:10px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:10px}.scard .d{font-size:11px;line-height:1.7;color:#dce3ed;margin-top:8px}
+.footer{text-align:center;color:var(--muted-2);font-size:11px;padding:18px 0 8px}
+@media(max-width:1120px){.grid,.personal-grid,.top{grid-template-columns:1fr}.sections{grid-template-columns:1fr}.examples{grid-template-columns:1fr}.agents{grid-template-columns:repeat(2,1fr)}.stagegrid{grid-template-columns:repeat(2,1fr)}.hero{flex-direction:column;align-items:flex-start}.hero-right{justify-content:flex-start}}
+@media(max-width:760px){.header{padding:16px 18px}.wrap{padding:16px}.hero h1{font-size:28px}.row3,.kv,.stagegrid{grid-template-columns:1fr}.agents{grid-template-columns:1fr}.bars{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="brand">
+    <div class="brand-mark"></div>
+    <div>
+      <div class="logo">Launch<span>Bank</span></div>
+      <div class="sublogo">Orange AI · Dynamic Recommendation System</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="badge">Prototype v3</div>
+    <div class="meta-note">Esade · AI Applications for Business</div>
+  </div>
+</div>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <h1>A recommendation interface that adapts to financial maturity, context, and user-specific constraints.</h1>
+      <p>Adjust the user profile to show how one system changes category selection, product suggestions, and explanation logic in real time. The layout is designed as a clean product surface rather than a typical “AI demo”.</p>
+    </div>
+    <div class="hero-right">
+      <div class="micro"><div class="n">87%</div><div class="l">Prediction accuracy</div></div>
+      <div class="micro"><div class="n">3.2×</div><div class="l">Vs. cold offer</div></div>
+      <div class="micro"><div class="n">0.4%</div><div class="l">Default rate</div></div>
+      <div class="micro"><div class="n">14d</div><div class="l">Prediction horizon</div></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="title"><span>Profile Inputs</span><span class="rule"></span></div>
+      <div class="sg"><div class="sl"><span>Monthly salary</span><span id="v-salary">€3,300</span></div><input id="s-salary" type="range" min="1200" max="8000" step="100" value="3300" oninput="updateAll()"></div>
+      <div class="sg"><div class="sl"><span>Salary growth rate</span><span id="v-growth">8%</span></div><input id="s-growth" type="range" min="0" max="25" step="1" value="8" oninput="updateAll()"></div>
+      <div class="sg"><div class="sl"><span>Savings rate</span><span id="v-savings">18%</span></div><input id="s-savings" type="range" min="0" max="50" step="1" value="18" oninput="updateAll()"></div>
+      <div class="sg"><div class="sl"><span>Debt-to-income ratio</span><span id="v-dti">35%</span></div><input id="s-dti" type="range" min="0" max="80" step="1" value="35" oninput="updateAll()"></div>
+      <div class="sg"><div class="sl"><span>Goal completion rate</span><span id="v-goals">55%</span></div><input id="s-goals" type="range" min="0" max="100" step="5" value="55" oninput="updateAll()"></div>
+      <div class="sg"><div class="sl"><span>Employer tenure</span><span id="v-tenure">18 mo</span></div><input id="s-tenure" type="range" min="1" max="60" step="1" value="18" oninput="updateAll()"></div>
+      <div class="sg"><div class="sl"><span>Career stage</span></div><select id="s-career" onchange="updateAll()"><option value="0">First job</option><option value="1" selected>Early career</option><option value="2">Mid career</option><option value="3">Senior</option></select></div>
+
+      <div class="title" style="margin-top:18px"><span>Personalization Layer</span><span class="rule"></span></div>
+      <div class="sg"><div class="sl"><span>Experience level</span></div><div class="chips"><div class="chip active" data-group="exp" data-val="beginner" onclick="pickChip(this)">Beginner</div><div class="chip" data-group="exp" data-val="intermediate" onclick="pickChip(this)">Intermediate</div><div class="chip" data-group="exp" data-val="advanced" onclick="pickChip(this)">Advanced</div></div></div>
+      <div class="sg"><div class="sl"><span>Primary context</span></div><div class="chips"><div class="chip active" data-group="ctx" data-val="professional" onclick="pickChip(this)">Professional</div><div class="chip" data-group="ctx" data-val="leisure" onclick="pickChip(this)">Leisure</div><div class="chip" data-group="ctx" data-val="urgent" onclick="pickChip(this)">Urgent need</div></div></div>
+      <div class="sg"><div class="sl"><span>Budget sensitivity</span></div><div class="chips"><div class="chip active" data-group="bud" data-val="high" onclick="pickChip(this)">High</div><div class="chip" data-group="bud" data-val="medium" onclick="pickChip(this)">Medium</div><div class="chip" data-group="bud" data-val="low" onclick="pickChip(this)">Low</div></div></div>
+      <div class="sg"><div class="sl"><span>Urgency</span></div><div class="chips"><div class="chip" data-group="urg" data-val="low" onclick="pickChip(this)">Low</div><div class="chip active" data-group="urg" data-val="medium" onclick="pickChip(this)">Medium</div><div class="chip" data-group="urg" data-val="high" onclick="pickChip(this)">High</div></div></div>
+      <div class="sg"><div class="sl"><span>Interaction preference</span></div><div class="chips"><div class="chip active" data-group="pref" data-val="mobile" onclick="pickChip(this)">Mobile-first</div><div class="chip" data-group="pref" data-val="human" onclick="pickChip(this)">Human support</div><div class="chip" data-group="pref" data-val="autonomous" onclick="pickChip(this)">Autonomous</div></div></div>
+      <div class="sg"><div class="sl"><span>Location constraint</span></div><div class="chips"><div class="chip active" data-group="loc" data-val="city" onclick="pickChip(this)">City</div><div class="chip" data-group="loc" data-val="remote" onclick="pickChip(this)">Remote</div><div class="chip" data-group="loc" data-val="international" onclick="pickChip(this)">International</div></div></div>
+
+      <div id="warn" class="warn"><h4>Data integrity warning</h4><p>This scenario combines unusually strong forward-looking signals. In a production pipeline, Orange AI would exclude or review this combination to avoid leakage into the prediction model.</p></div>
+    </div>
+
+    <div class="right">
+      <div class="top">
+        <div class="panel score-panel">
+          <div class="title" style="width:100%"><span>Maturity Score</span><span class="rule"></span></div>
+          <div class="ring">
+            <svg width="164" height="164" viewBox="0 0 164 164">
+              <circle cx="82" cy="82" r="66" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="10"></circle>
+              <circle id="arc" cx="82" cy="82" r="66" fill="none" stroke="#ff6b00" stroke-width="10" stroke-linecap="round" stroke-dasharray="414.69" stroke-dashoffset="414.69"></circle>
+            </svg>
+            <div class="score"><div id="score" class="num">0</div><div class="sub">out of 100</div></div>
+          </div>
+          <div id="stage" class="stage">—</div>
+          <div id="stage-desc" class="desc"></div>
+        </div>
+
+        <div class="panel">
+          <div class="title"><span>Recommended Output</span><span class="rule"></span></div>
+          <div class="rec">
+            <div class="eyebrow">Next best product</div>
+            <div id="product" class="product">—</div>
+            <div id="timing" class="timing">—</div>
+            <div class="meta-tags">
+              <div class="tag">Event · <span id="event">—</span></div>
+              <div class="tag">Timeline · <span id="timeline">—</span></div>
+              <div class="tag">Confidence · <span id="conf">—</span></div>
+              <div class="tag">Risk · <span id="risk">—</span></div>
+            </div>
+          </div>
+          <div class="row3">
+            <div class="box"><div class="l">Predicted event</div><div id="event2" class="v">—</div></div>
+            <div class="box"><div class="l">Offer timing</div><div id="timing2" class="v">—</div></div>
+            <div class="box"><div class="l">Category</div><div id="catshift" class="v">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="title"><span>System Modules</span><span class="rule"></span></div>
+        <div class="agents">
+          <div class="agent" id="ag0"><div class="index">Module 01</div><div class="name">Career signal tracking</div><div id="ags0" class="status">Monitoring</div></div>
+          <div class="agent" id="ag1"><div class="index">Module 02</div><div class="name">Income trajectory model</div><div id="ags1" class="status">Idle</div></div>
+          <div class="agent" id="ag2"><div class="index">Module 03</div><div class="name">Next move prediction</div><div id="ags2" class="status">Idle</div></div>
+          <div class="agent" id="ag3"><div class="index">Module 04</div><div class="name">Bridge financing logic</div><div id="ags3" class="status">Idle</div></div>
+          <div class="agent" id="ag4"><div class="index">Module 05</div><div class="name">Financial coaching layer</div><div id="ags4" class="status">Active</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sections">
+    <div class="panel">
+      <div class="title"><span>Decision Logic</span><span class="rule"></span></div>
+      <div id="credit"></div>
+    </div>
+
+    <div class="panel">
+      <div class="title"><span>Model Framing</span><span class="rule"></span></div>
+      <div class="toggle">
+        <div id="tml" class="tb sel" onclick="setMode('ml')">Predictive ML<br><span style="font-weight:500;font-size:10px">Deterministic scoring logic</span></div>
+        <div id="tllm" class="tb" onclick="setMode('llm')">Language Model<br><span style="font-weight:500;font-size:10px">Explanation layer only</span></div>
+      </div>
+      <div id="modeldesc" class="modeldesc"></div>
+      <div id="modelout" class="modelout"></div>
+    </div>
+
+    <div class="panel">
+      <div class="title"><span>Performance Trade-off</span><span class="rule"></span></div>
+      <div class="bars">
+        <div>
+          <div class="barlab"><span>Precision</span><span id="precv" style="color:var(--blue)">—</span></div><div class="bar"><div id="precf" class="fill" style="background:var(--blue);width:0%"></div></div>
+          <div style="height:10px"></div>
+          <div class="barlab"><span>Recall</span><span id="recvv" style="color:var(--green)">—</span></div><div class="bar"><div id="recf" class="fill" style="background:var(--green);width:0%"></div></div>
+          <div style="height:10px"></div>
+          <div class="barlab"><span>F1 score</span><span id="f1v" style="color:var(--accent)">—</span></div><div class="bar"><div id="f1f" class="fill" style="background:var(--accent);width:0%"></div></div>
+        </div>
+        <div id="prnote" class="note"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="title"><span>Lifecycle Path</span><span class="rule"></span></div>
+      <div class="journey">
+        <div class="step"><div id="d0" class="dot">01</div><div class="jl">Starter</div><div class="jm">Month 0</div></div><div id="l0" class="line"></div>
+        <div class="step"><div id="d1" class="dot">02</div><div class="jl">Builder</div><div class="jm">Month 8</div></div><div id="l1" class="line"></div>
+        <div class="step"><div id="d2" class="dot">03</div><div class="jl">Grower</div><div class="jm">Month 18</div></div><div id="l2" class="line"></div>
+        <div class="step"><div id="d3" class="dot">04</div><div class="jl">Optimizer</div><div class="jm">Month 26</div></div>
+      </div>
+      <div id="journeytxt" class="note" style="margin-top:12px;text-align:center"></div>
+    </div>
+
+    <div class="panel full">
+      <div class="title"><span>Dynamic Personalization Layer</span><span class="rule"></span></div>
+      <div class="personal-grid">
+        <div class="profile-card">
+          <div class="profile-head">
+            <div>
+              <h3>Active User Profile</h3>
+              <p>The recommendation updates when financial variables and situational variables interact.</p>
+            </div>
+            <div class="badge" style="padding:6px 10px">Adaptive</div>
+          </div>
+          <div class="kv">
+            <div class="item"><div class="k">Key variables</div><div id="keyvars" class="v"></div></div>
+            <div class="item"><div class="k">Recommended category</div><div id="catrec" class="v"></div></div>
+            <div class="item"><div class="k">Constraint pattern</div><div id="constraints" class="v"></div></div>
+            <div class="item"><div class="k">Behavior signal</div><div id="behaviour" class="v"></div></div>
+          </div>
+          <div id="toprecs" class="list"></div>
+          <div id="insight" class="insight"></div>
+        </div>
+        <div>
+          <div class="examples">
+            <div class="example"><div class="eh">Profile A — Cost-sensitive early professional</div><div class="el">High budget sensitivity and medium urgency should shift the system toward low-friction entry products with clear control.</div></div>
+            <div class="example"><div class="eh">Profile B — Urgent career transition</div><div class="el">High urgency and professional context should shift the output toward bridge products and fast support.</div></div>
+            <div class="example"><div class="eh">Profile C — Advanced optimizer</div><div class="el">Advanced experience and low price sensitivity should shift the output toward premium long-term products.</div></div>
+          </div>
+          <div class="callout">
+            <div class="title" style="margin-bottom:10px;padding-bottom:10px"><span>Presentation cue</span><span class="rule"></span></div>
+            <div class="note">Use one-variable changes during the demo. Change only context, or only urgency, while holding the financial profile constant. That makes the adaptation legible and visually credible in front of the class.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel full">
+      <div class="title"><span>Data Flywheel</span><span class="rule"></span></div>
+      <div class="fly">
+        <div class="node"><div class="i">01</div><div class="l">More users</div></div><div class="arrow">→</div>
+        <div class="node"><div class="i">02</div><div class="l">More data</div></div><div class="arrow">→</div>
+        <div class="node"><div class="i">03</div><div class="l">Model improves</div></div><div class="arrow">→</div>
+        <div class="node"><div class="i">04</div><div class="l">Better predictions</div></div><div class="arrow">→</div>
+        <div class="node"><div class="i">05</div><div class="l">Lower risk</div></div><div class="arrow">→</div>
+        <div class="node"><div class="i">06</div><div class="l">Better products</div></div><div class="arrow">↺</div>
+      </div>
+      <div class="mile">At <span>1M customers</span>, the system can infer cohort-level patterns such as <span>“MiM graduates in Barcelona reach Grower stage in 26 months”</span>, while improving acceptance and lowering default risk.</div>
+    </div>
+
+    <div class="panel full">
+      <div class="title"><span>Financial Maturity Stages</span><span class="rule"></span></div>
+      <div class="stagegrid">
+        <div id="st0" class="scard"><div class="topline"><div class="n">Starter</div><div class="smark">01</div></div><div class="r">Score 0–30</div><div class="d">The user is in setup mode. The system prioritizes simple onboarding, savings habits, and low-friction financial control.</div></div>
+        <div id="st1" class="scard"><div class="topline"><div class="n">Builder</div><div class="smark">02</div></div><div class="r">Score 31–60</div><div class="d">The user is forming repeatable habits. The system can introduce first-credit and guided investment features.</div></div>
+        <div id="st2" class="scard"><div class="topline"><div class="n">Grower</div><div class="smark">03</div></div><div class="r">Score 61–80</div><div class="d">The user is moving into higher-value needs. The system shifts toward proactive and transition-sensitive products.</div></div>
+        <div id="st3" class="scard"><div class="topline"><div class="n">Optimizer</div><div class="smark">04</div></div><div class="r">Score 81–100</div><div class="d">The user is ready for long-term, higher-complexity decisions. The system prioritizes wealth, property, and portfolio planning.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">LaunchBank · Orange AI prototype · layout refined for product presentation</div>
+</div>
+<script>
+const STAGES=[
+  {label:'Starter',color:'#8993a4',desc:'Foundational setup with simple products and low-friction guidance.'},
+  {label:'Builder',color:'#f3b84b',desc:'Developing reliable habits and becoming eligible for first credit and guided investing.'},
+  {label:'Grower',color:'#6ea8fe',desc:'Career momentum is increasing, so the system expands into proactive support and transition products.'},
+  {label:'Optimizer',color:'#57d48b',desc:'Long-term planning becomes the focus, with premium products and more complex financial decisions.'}
+];
+const CORE_PRODUCTS=[
+  {name:'Savings Pot — Free Account',timing:'Activate immediately and focus on consistent habit formation.',event:'First salary deposit',timeline:'Immediate',conf:'91%',risk:'Very low'},
+  {name:'Credit Line €2,000 — Pre-staged',timing:'Offer now, based on a predicted progression event within 3 to 5 weeks.',event:'Salary raise',timeline:'3–5 weeks',conf:'79%',risk:'Low'},
+  {name:'Career Bridge Credit €8,000',timing:'Pre-stage for a likely transition window within the next 2 to 4 months.',event:'Role change',timeline:'2–4 months',conf:'84%',risk:'Medium'},
+  {name:'Mortgage Readiness + Investment Suite',timing:'High-intent window is open and suited for the next major financial step.',event:'Property search',timeline:'2–6 months',conf:'88%',risk:'Low'}
+];
+const CATALOG={
+  starter:{
+    professional:[['Smart Budget Pot','Keeps core spending visible while helping the user build a first financial buffer.'],['Auto-Save Starter','Creates low-friction savings habits directly from salary inflows.'],['Cashflow Overview','Reduces uncertainty with a simple view of monthly inflow and outflow.']],
+    leisure:[['Flexible Wallet','Supports discretionary spending without losing visibility or control.'],['Goal Pocket','Lets the user ring-fence spending for short-term plans.'],['Spending Snapshot','Shows leisure-heavy patterns before they become a problem.']],
+    urgent:[['Emergency Buffer Mini','Provides fast-access liquidity for short-term shocks.'],['Priority Cash Planner','Reorders immediate obligations into a clearer short-term plan.'],['Direct Support Channel','Creates a faster path to help during time-sensitive moments.']]
+  },
+  builder:{
+    professional:[['Starter Credit Line','Matches users who are ready for supervised first credit.'],['Guided Investing Lite','Introduces investing without requiring advanced knowledge.'],['Promotion Prep Plan','Connects salary progression to a structured next step.']],
+    leisure:[['Installment Pocket','Supports planned discretionary spending without overextending the user.'],['Flexible Split Pay','Fits shared social or travel expenses with low friction.'],['Savings Goal Boost','Redirects excess spend toward visible goals.']],
+    urgent:[['Fast Decision Credit','Shortens the path to approval in a time-sensitive situation.'],['Bridge Cash Lite','Handles temporary income gaps with clearer limits.'],['Advisor Callback','Adds reassurance when urgency makes self-service less comfortable.']]
+  },
+  grower:{
+    professional:[['Career Bridge Credit','Supports relocation, reskilling, or role transition needs.'],['Pro Cashflow Manager','Coordinates multiple goals, liabilities, and timing windows.'],['Raise Allocation Engine','Splits income increases across savings, debt reduction, and investing.']],
+    leisure:[['Premium Travel Wallet','Allows more ambitious lifestyle spending with better guardrails.'],['Dynamic Goal Portfolio','Balances enjoyment with medium-term wealth building.'],['Lifestyle Guardrails','Prevents spending drift as income rises.']],
+    urgent:[['Priority Bridge Loan','Fits a high-pressure professional transition with faster turnaround.'],['Offer Lock-In Support','Accelerates product routing during a narrow decision window.'],['Escalation Route','Pushes the case toward higher-touch review when timing matters.']]
+  },
+  optimizer:{
+    professional:[['Mortgage Readiness Suite','Aligns long-term borrowing with stable financial maturity.'],['Investment Portfolio Pro','Supports broader allocation and more advanced wealth structure.'],['Tax-Efficient Wealth Plan','Optimizes long-term capital growth and asset positioning.']],
+    leisure:[['Lifestyle Portfolio','Maintains flexibility while preserving long-term priorities.'],['Cross-Market Spending','Supports users who operate fluidly across countries and currencies.'],['Asset Goal Optimizer','Balances property, travel, and capital goals together.']],
+    urgent:[['Priority Executive Support','Fast-tracks complex and high-value cases.'],['Liquidity Planner Pro','Creates access to cash without distorting the broader portfolio.'],['Risk Rebalancing Alert','Protects long-term strategy during short-term shocks.']]
+  }
+};
+let mode='ml';
+const state={exp:'beginner',ctx:'professional',bud:'high',urg:'medium',pref:'mobile',loc:'city'};
+function pickChip(el){const g=el.dataset.group,v=el.dataset.val;state[g]=v;document.querySelectorAll(`.chip[data-group="${g}"]`).forEach(x=>x.classList.remove('active'));el.classList.add('active');updateAll();}
+function setMode(m){mode=m;document.getElementById('tml').classList.toggle('sel',m==='ml');document.getElementById('tllm').classList.toggle('sel',m==='llm');updateAll();}
+function vals(){return{salary:+document.getElementById('s-salary').value,growth:+document.getElementById('s-growth').value,savings:+document.getElementById('s-savings').value,dti:+document.getElementById('s-dti').value,goals:+document.getElementById('s-goals').value,tenure:+document.getElementById('s-tenure').value,career:+document.getElementById('s-career').value,...state}}
+function score(d){let s=0;s+=Math.min(25,((d.salary-1200)/(8000-1200))*25);s+=Math.min(15,(d.growth/25)*15);s+=Math.min(20,(d.savings/50)*20);s+=Math.min(15,((80-d.dti)/80)*15);s+=Math.min(15,(d.goals/100)*15);s+=Math.min(5,(d.tenure/60)*5);s+=(d.career/3)*5;return Math.max(0,Math.min(100,Math.round(s)))}
+function stageIdx(sc){return sc<=30?0:sc<=60?1:sc<=80?2:3}
+function stageKey(i){return ['starter','builder','grower','optimizer'][i]}
+function category(d,si){
+  if(d.urg==='high' && si>=1) return 'Time-sensitive support';
+  if(d.ctx==='professional' && si>=2) return 'Career acceleration';
+  if(d.ctx==='leisure' && d.bud!=='high') return 'Flexible lifestyle planning';
+  if(d.bud==='high' || si===0) return 'Foundational financial setup';
+  if(si===3) return 'Long-term wealth optimization';
+  return 'Adaptive growth support';
+}
+function inferBehaviour(d,sc){
+  const signals=[];
+  if(d.pref==='mobile') signals.push('Digital self-service');
+  if(d.pref==='human') signals.push('Trust-seeking support');
+  if(d.pref==='autonomous') signals.push('Automation tolerance');
+  if(d.goals>=70) signals.push('High goal discipline');
+  if(d.savings>=20) signals.push('Strong savings behavior');
+  if(d.urg==='high') signals.push('Compressed decision window');
+  if(d.ctx==='professional') signals.push('Career-linked intent');
+  if(sc>=75) signals.push('Premium readiness');
+  return signals.slice(0,3).join(' · ');
+}
+function adjustSuggestions(d,si){
+  let items=CATALOG[stageKey(si)][d.ctx].map(x=>({name:x[0],reason:x[1],fit:'Core fit'}));
+  if(d.bud==='high') items=items.map((x,i)=>({...x,reason:x.reason+' It also keeps cost and commitment low.',fit:i===0?'Low-cost fit':x.fit}));
+  if(d.urg==='high') items=items.map((x,i)=>({...x,reason:x.reason+' Fast turnaround matters in this situation.',fit:i===0?'Urgent fit':x.fit}));
+  if(d.pref==='human') items=items.map((x,i)=>({...x,reason:x.reason+' Human guidance makes the recommendation more credible for this user.',fit:i===1?'Support fit':x.fit}));
+  if(d.pref==='autonomous') items=items.map((x,i)=>({...x,reason:x.reason+' This works well for a user who prefers low-touch control.',fit:i===0?'Autonomous fit':x.fit}));
+  if(d.loc==='international') items=items.map((x,i)=>({...x,reason:x.reason+' Cross-border flexibility increases the value of this choice.',fit:i===2?'Cross-market fit':x.fit}));
+  if(d.exp==='advanced') items=items.map((x,i)=>({...x,reason:x.reason+' The user can handle more complexity and configuration.',fit:i===2?'Advanced-user fit':x.fit}));
+  if(d.exp==='beginner') items=items.map((x,i)=>({...x,reason:x.reason+' Simplicity matters because the user is still learning.',fit:i===0?'Beginner fit':x.fit}));
+  return items.slice(0,3);
+}
+function insightText(d,cat){return `This profile is routed to <b>${cat}</b> because the system combines financial maturity with situational context. The output changes not only with score, but also with <b>${d.ctx}</b> context, <b>${d.bud}</b> budget sensitivity, <b>${d.urg}</b> urgency, and a <b>${d.pref}</b> interaction preference.`}
+function updateAll(){
+  const d=vals(),sc=score(d),si=stageIdx(sc),st=STAGES[si],cp=CORE_PRODUCTS[si];
+  document.getElementById('v-salary').textContent='€'+d.salary.toLocaleString();
+  document.getElementById('v-growth').textContent=d.growth+'%';
+  document.getElementById('v-savings').textContent=d.savings+'%';
+  document.getElementById('v-dti').textContent=d.dti+'%';
+  document.getElementById('v-goals').textContent=d.goals+'%';
+  document.getElementById('v-tenure').textContent=d.tenure+' mo';
+  document.getElementById('score').textContent=sc;document.getElementById('score').style.color=st.color;
+  const arc=document.getElementById('arc');const circ=2*Math.PI*66;arc.style.stroke=st.color;arc.style.strokeDashoffset=circ-(sc/100)*circ;
+  const sb=document.getElementById('stage');sb.textContent=st.label;sb.style.background=st.color+'18';sb.style.color=st.color;document.getElementById('stage-desc').textContent=st.desc;
+  document.getElementById('product').textContent=cp.name;document.getElementById('timing').textContent=cp.timing;document.getElementById('event').textContent=cp.event;document.getElementById('timeline').textContent=cp.timeline;document.getElementById('conf').textContent=cp.conf;document.getElementById('risk').textContent=cp.risk;document.getElementById('event2').textContent=cp.event;document.getElementById('timing2').textContent=cp.timeline;
+  const cat=category(d,si);document.getElementById('catshift').textContent=cat;
+  const active=[true,sc>25,sc>55,sc>40,true],names=['Monitoring',sc>25?'Active':'Idle',sc>55?'Active':'Idle',sc>40?'Reviewing':'Idle','Active'];
+  for(let i=0;i<5;i++){document.getElementById('ag'+i).classList.toggle('active',active[i]);const el=document.getElementById('ags'+i);el.textContent=names[i];el.className='status '+(i===3&&sc>40?'warnstate':active[i]?'on':'off')}
+  const rules=[
+    ['01','Stable income signal','Salary consistency plus employer tenure',d.salary>=2000&&d.tenure>=12?'g':d.tenure>=6?'y':'r',d.salary>=2000&&d.tenure>=12?'Approved':d.tenure>=6?'Partial':'Not yet'],
+    ['02','Debt-to-income ratio','A ratio below 30% supports credit readiness',d.dti<30?'g':d.dti<50?'y':'r',d.dti<30?'Approved':d.dti<50?'Partial':'Not yet'],
+    ['03','Savings behavior','Savings above 10% indicate financial discipline',d.savings>=10?'g':d.savings>=5?'y':'r',d.savings>=10?'Approved':d.savings>=5?'Partial':'Not yet'],
+    ['04','Goal completion rate','Completed goals signal consistency and reliability',d.goals>=50?'g':d.goals>=25?'y':'r',d.goals>=50?'Approved':d.goals>=25?'Partial':'Not yet'],
+    ['05','Career trajectory','Growth rate and stage alignment improve confidence',d.growth>=5&&d.career>=1?'g':d.career>=1?'y':'r',d.growth>=5&&d.career>=1?'Approved':d.career>=1?'Partial':'Not yet']
+  ];
+  document.getElementById('credit').innerHTML=rules.map(r=>`<div class="credit-row"><div class="ci">${r[0]}</div><div><div class="cn">${r[1]}</div><div class="cd">${r[2]}</div></div><div class="cb ${r[3]}">${r[4]}</div></div>`).join('');
+  const precision=Math.round(55+sc*.3),recall=Math.round(70+sc*.2),f1=Math.round(2*precision*recall/(precision+recall));
+  document.getElementById('precv').textContent=precision+'%';document.getElementById('recvv').textContent=recall+'%';document.getElementById('f1v').textContent=f1+'%';document.getElementById('precf').style.width=Math.min(100,precision)+'%';document.getElementById('recf').style.width=Math.min(100,recall)+'%';document.getElementById('f1f').style.width=Math.min(100,f1)+'%';
+  document.getElementById('prnote').innerHTML='The system favors <b style="color:var(--green)">recall</b> because missing a ready customer is more costly than showing a relevant recommendation to someone who is not quite ready yet.';
+  for(let i=0;i<4;i++){const dot=document.getElementById('d'+i);dot.style.borderColor=si>=i?STAGES[i].color:'var(--border-2)';dot.style.color=si>=i?STAGES[i].color:'var(--muted)';dot.style.background=si>=i?STAGES[i].color+'10':'rgba(255,255,255,.03)'}
+  for(let i=0;i<3;i++)document.getElementById('l'+i).classList.toggle('on',si>i);
+  document.getElementById('journeytxt').innerHTML=`Current stage: <b>${st.label}</b> at <b>${sc}/100</b>. This path visualizes how the system evolves from onboarding to high-value planning across the customer lifecycle.`;
+  for(let i=0;i<4;i++){const c=document.getElementById('st'+i);c.style.borderColor=i===si?STAGES[i].color+'55':'var(--border)';c.style.background=i===si?STAGES[i].color+'10':'rgba(255,255,255,.025)'}
+  document.getElementById('warn').classList.toggle('show',d.growth>18&&d.savings>38);
+  document.getElementById('tml').classList.toggle('sel',mode==='ml');document.getElementById('tllm').classList.toggle('sel',mode==='llm');
+  document.getElementById('modeldesc').textContent=mode==='ml'?'Predictive ML uses structured features and a repeatable decision boundary. That makes it auditable and suitable for product recommendations linked to financial outcomes.':'A language model can explain or guide, but it does not create a stable financial decision boundary by itself.';
+  document.getElementById('modelout').innerHTML=mode==='ml'?`<b style="color:var(--accent)">Orange AI output</b><br>Score <b>${sc}/100</b> · Stage <b>${st.label}</b> · Category <b>${cat}</b> · Product <b>${cp.name}</b>`:`<b style="color:var(--blue)">Language model example</b><br>The system could explain the recommendation in natural language, but the eligibility logic still comes from the predictive model.`;
+  document.getElementById('keyvars').textContent=[['First job','Early career','Mid career','Senior'][d.career],d.exp+' experience',d.ctx+' context',d.bud+' budget sensitivity',d.urg+' urgency'].join(' · ');
+  document.getElementById('catrec').textContent=cat;
+  document.getElementById('constraints').textContent=`Budget ${d.bud} · Urgency ${d.urg} · Location ${d.loc} · Interface ${d.pref}`;
+  document.getElementById('behaviour').textContent=inferBehaviour(d,sc);
+  const recs=adjustSuggestions(d,si);
+  document.getElementById('toprecs').innerHTML=recs.map((r,i)=>`<div class="itemrec"><div class="topline"><div><div class="name">${i+1}. ${r.name}</div><div class="sub">Suggested within ${cat}</div></div><div class="pill">${r.fit}</div></div><div class="why"><b style="color:#fff">Why this fits:</b> ${r.reason}</div></div>`).join('');
+  document.getElementById('insight').innerHTML=insightText(d,cat);
+}
+updateAll();
+</script>
+</body>
+</html>
